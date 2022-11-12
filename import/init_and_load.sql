@@ -69,6 +69,22 @@ CREATE TABLE IF NOT EXISTS genomescores (
     FOREIGN KEY(tagId) REFERENCES genometags(tagId)
 );
 
+CREATE TABLE IF NOT EXISTS genres(
+	genreId INT NOT NULL,
+    genrename VARCHAR(15) NOT NULL,
+	PRIMARY KEY(genreId)
+);
+
+CREATE TABLE IF NOT EXISTS movies_genres (
+	movieId INT NOT NULL,
+    genreId INT NULL,
+    /*PRIMARY KEY(movieId, genreId),*/
+    /*because of null values, but can be solved.*/
+    FOREIGN KEY(movieid) REFERENCES movies(movieId),
+	FOREIGN KEY(genreId) REFERENCES genres(genreId)
+    );
+
+
 LOAD DATA INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\data\\movies.csv'
 INTO TABLE movies
 FIELDS TERMINATED BY ','
@@ -116,7 +132,6 @@ LOAD DATA INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\data\\links
 INTO TABLE links
 FIELDS TERMINATED BY ','
 OPTIONALLY ENCLOSED BY '"'
-
 #https://stackoverflow.com/questions/25857468/mysql-load-infile-from-csv-null-last-column
 LINES TERMINATED BY '\r\n'
 IGNORE 1 ROWS
@@ -135,3 +150,17 @@ INTO TABLE genomescores
 FIELDS TERMINATED BY ','
 LINES TERMINATED BY '\n'
 IGNORE 1 ROWS;
+
+LOAD DATA INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\data\\genres.csv'
+INTO TABLE genres
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\data\\movie_genre.csv'
+INTO TABLE movies_genres
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\r\n'
+IGNORE 1 ROWS
+(movieId,@GenreId)
+SET genreId = nullif(@GenreId,'');
