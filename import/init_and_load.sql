@@ -1,4 +1,4 @@
-#KLF 2022-11-10
+#KLF 2022-11-19
 
 #Prerequisites: Find trusted dir to paste files (because secure-file-privileges)
 SHOW VARIABLES WHERE `Variable_name` = 'secure_file_priv';
@@ -7,27 +7,18 @@ CREATE DATABASE IF NOT EXISTS popular_movies;
 USE popular_movies;
 
 CREATE TABLE IF NOT EXISTS movies (
-	movieId	INT	NOT NULL,
+	movieId	MEDIUMINT NOT NULL,
     title VARCHAR(255) NOT NULL,
-    genres VARCHAR(255) NOT NULL,
+	#genres VARCHAR(255) NOT NULL,
+    release_year SMALLINT NOT NULL,
 	PRIMARY KEY (movieId)
 );
-
-CREATE TABLE IF NOT EXISTS movies_2 (
-	movieId	INT	NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    genres VARCHAR(255) NOT NULL,
-    release_year VARCHAR(4) NOT NULL,
-	PRIMARY KEY (movieId)
-);
-
 
 CREATE TABLE IF NOT EXISTS ratings (
 	#additional identifier
     rating_id INT AUTO_INCREMENT,
-
-	userId INT NOT NULL,
-    movieId INT NOT NULL,
+	userId MEDIUMINT NOT NULL,
+    movieId MEDIUMINT NOT NULL,
     rating DECIMAL (2,1) NOT NULL,
     
     #custom name b.c. function name
@@ -38,8 +29,8 @@ CREATE TABLE IF NOT EXISTS ratings (
 
 CREATE TABLE IF NOT EXISTS tags (
 	tag_id INT AUTO_INCREMENT,
-    userId INT NOT NULL,
-    movieId INT NOT NULL,
+    userId MEDIUMINT NOT NULL,
+    movieId MEDIUMINT NOT NULL,
     tag VARCHAR(255) NOT NULL,
     tag_date DATETIME NOT NULL,
     PRIMARY KEY(tag_id),
@@ -47,7 +38,7 @@ CREATE TABLE IF NOT EXISTS tags (
 );
 
 CREATE TABLE IF NOT EXISTS links (
-	movieId INT NOT NULL,
+	movieId MEDIUMINT NOT NULL,
     imdbId VARCHAR(10) NOT NULL ,
     tmdbId INT DEFAULT NULL,
     PRIMARY KEY(movieId),
@@ -55,14 +46,14 @@ CREATE TABLE IF NOT EXISTS links (
 );
 
 CREATE TABLE IF NOT EXISTS genometags (
-	tagId INT NOT NULL,
+	tagId SMALLINT NOT NULL,
     tag VARCHAR(255) NOT NULL,
     PRIMARY KEY(tagId)
 );
 
 CREATE TABLE IF NOT EXISTS genomescores (
-	movieId INT NOT NULL,
-    tagId INT NOT NULL,
+	movieId MEDIUMINT NOT NULL,
+    tagId SMALLINT NOT NULL,
     relevance DECIMAL(7,6) NOT NULL,
     PRIMARY KEY(movieId,tagId),
     FOREIGN KEY(movieId) REFERENCES movies(movieId),
@@ -70,35 +61,27 @@ CREATE TABLE IF NOT EXISTS genomescores (
 );
 
 CREATE TABLE IF NOT EXISTS genres(
-	genreId INT NOT NULL,
+	genreId TINYINT NOT NULL,
     genrename VARCHAR(15) NOT NULL,
 	PRIMARY KEY(genreId)
 );
 
 CREATE TABLE IF NOT EXISTS movies_genres (
-	movieId INT NOT NULL,
-    genreId INT NULL,
+	movieId MEDIUMINT NOT NULL,
+    genreId TINYINT NULL,
     /*PRIMARY KEY(movieId, genreId),*/
     /*because of null values, but can be solved.*/
     FOREIGN KEY(movieid) REFERENCES movies(movieId),
 	FOREIGN KEY(genreId) REFERENCES genres(genreId)
     );
 
-
 LOAD DATA INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\data\\movies.csv'
 INTO TABLE movies
 FIELDS TERMINATED BY ','
 OPTIONALLY ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
-IGNORE 1 ROWS;
-
-LOAD DATA INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\data\\movies.csv'
-INTO TABLE movies_2
-FIELDS TERMINATED BY ','
-OPTIONALLY ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
 IGNORE 1 ROWS
-(movieId,@title,genres)
+(movieId,@title,@genre)
 SET title = @title,
 	release_year = ifnull(regexp_substr(@title,'\\d{4}(?!.*\\d)'),-1);
 
