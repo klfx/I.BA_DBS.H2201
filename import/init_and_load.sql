@@ -1,4 +1,4 @@
-#KLF 2022-11-19
+#KLF 2022-11-23
 
 #Prerequisites: Find trusted dir to paste files (because secure-file-privileges)
 SHOW VARIABLES WHERE `Variable_name` = 'secure_file_priv';
@@ -24,7 +24,8 @@ CREATE TABLE IF NOT EXISTS ratings (
     #custom name b.c. function name
     rating_date DATETIME NOT NULL,
     
-    PRIMARY KEY(rating_id)
+    PRIMARY KEY(rating_id),
+    FOREIGN KEY (movieId) REFERENCES movies(movieId)
 );
 
 CREATE TABLE IF NOT EXISTS tags (
