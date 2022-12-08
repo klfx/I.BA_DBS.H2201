@@ -15,4 +15,8 @@ select * from ratings where rating < 2.0;
 
 select * from ratings where userId IN (select distinct userId from ratings where rating < 2.0);
 
-select avg(rating),movieId from ratings group by movieId order by avg(rating) desc;
+#inspect behaviour of sus user 73406 (almost 200k ratings)
+select r.rating_id,m.title,r.rating,r.rating_date from ratings as r inner join movies as m on m.movieId=r.movieId where r.userId = '73406' order by r.rating_date;
+
+#Find Films with most ratings
+select count(r.movieId),r.movieId,m.title from ratings as r inner join movies as m on r.movieId=m.movieId group by m.movieId order by count(*) desc;
