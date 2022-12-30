@@ -1,3 +1,4 @@
 /data/src/*
 .DS_Store
 Credentials/*
+code_requests_visualisations/connection_test/credentials.csv
